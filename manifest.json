@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "Autodarts Scraper",
+  "version": "1.0",
+  "description": "Scrapes values from Autodarts and displays them in a live dashboard.",
+  "permissions": ["storage", "scripting", "activeTab"],
+  "host_permissions": ["https://autodarts.io/*"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Autodarts Scraper"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://autodarts.io/*"],
+      "js": ["content.js"]
+    }
+  ]
+}
