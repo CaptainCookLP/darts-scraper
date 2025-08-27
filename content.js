@@ -37,6 +37,7 @@ chrome.storage.onChanged.addListener((changes, area) => {
   }
 });
 
+
 function getSelector(el) {
   if (el.id) return `#${el.id}`;
   const path = [];
