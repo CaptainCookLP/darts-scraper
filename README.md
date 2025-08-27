@@ -7,7 +7,7 @@ This repository contains a Chrome extension that lets you define variables on [A
 1. Load the extension in Chrome by visiting `chrome://extensions`, enabling *Developer mode*, and clicking **Load unpacked**.
 2. Choose this folder.
 3. Navigate to an Autodarts page and open the extension popup.
-4. Enter a variable name and CSS selector, then click **Variable hinzufügen**.
+4. Enter a variable name and CSS selector, then click **Variable hinzufügen**, or use **Feld anklicken** to choose an element directly on the page and name it.
 5. Click **Dashboard öffnen** to view a new window that shows the values in real time.
 
 ## Development

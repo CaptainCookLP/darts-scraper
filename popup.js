@@ -9,6 +9,13 @@ document.getElementById('add').addEventListener('click', async () => {
   document.getElementById('var-selector').value = '';
 });
 
+document.getElementById('select').addEventListener('click', async () => {
+  const [tab] = await chrome.tabs.query({active: true, currentWindow: true});
+  if (tab?.id) {
+    chrome.tabs.sendMessage(tab.id, {type: 'start-selection'});
+  }
+});
+
 document.getElementById('open').addEventListener('click', () => {
   chrome.windows.create({
     url: chrome.runtime.getURL('dashboard.html'),
