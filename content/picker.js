@@ -1,0 +1,1 @@
+try { if (window.__adStartPicker) window.__adStartPicker(); } catch (e) {}
