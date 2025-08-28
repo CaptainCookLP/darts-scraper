@@ -1,18 +1,40 @@
 {
   "manifest_version": 3,
-  "name": "Autodarts Scraper",
-  "version": "1.0",
-  "description": "Scrapes values from Autodarts and displays them in a live dashboard.",
-  "permissions": ["storage", "scripting", "activeTab"],
-  "host_permissions": ["https://autodarts.io/*"],
-  "action": {
-    "default_popup": "popup.html",
-    "default_title": "Autodarts Scraper"
+  "name": "AutodartsWebSocket",
+  "version": "1.0.4",
+  "description": "Scrape live data from play.autodarts.io with clickable selection, live updates, WebSocket export, and HTTP POST webhook.",
+  "permissions": [
+    "storage",
+    "scripting",
+    "activeTab",
+    "contextMenus",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://play.autodarts.io/*",
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "service_worker.js"
   },
+   "icons": {
+    "64": "icon64.png",
+    "128": "icon128.png"
+  },
+  "action": {
+    "default_title": "Autodarts Scraper",
+    "default_popup": "popup.html"
+  },
+  "options_page": "options.html",
   "content_scripts": [
     {
-      "matches": ["https://autodarts.io/*"],
-      "js": ["content.js"]
+      "matches": [
+        "https://play.autodarts.io/*"
+      ],
+      "js": [
+        "content/autoscrape.js"
+      ],
+      "run_at": "document_idle"
     }
   ]
 }
