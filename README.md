@@ -85,4 +85,4 @@ Nicht offiziell mit Autodarts verbunden; bitte Nutzungsbedingungen beachten. Sel
 
 ## Lizenz
 
-MIT (vorgeschlagen).
+MIT
