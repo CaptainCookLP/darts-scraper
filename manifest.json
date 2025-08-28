@@ -3,21 +3,12 @@
   "name": "AutodartsWebSocket",
   "version": "1.0.4",
   "description": "Scrape live data from play.autodarts.io with clickable selection, live updates, WebSocket export, and HTTP POST webhook.",
-  "permissions": [
-    "storage",
-    "scripting",
-    "activeTab",
-    "contextMenus",
-    "tabs"
-  ],
-  "host_permissions": [
-    "https://play.autodarts.io/*",
-    "<all_urls>"
-  ],
+  "permissions": ["storage", "scripting", "activeTab", "contextMenus", "tabs"],
+  "host_permissions": ["https://play.autodarts.io/*"],
   "background": {
     "service_worker": "service_worker.js"
   },
-   "icons": {
+  "icons": {
     "64": "icon64.png",
     "128": "icon128.png"
   },
@@ -28,12 +19,8 @@
   "options_page": "options.html",
   "content_scripts": [
     {
-      "matches": [
-        "https://play.autodarts.io/*"
-      ],
-      "js": [
-        "content/autoscrape.js"
-      ],
+      "matches": ["https://play.autodarts.io/*"],
+      "js": ["content/autoscrape.js"],
       "run_at": "document_idle"
     }
   ]
