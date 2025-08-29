@@ -1,6 +1,6 @@
 # Autodarts Live Scraper (Chrome Extension)
 
-Scraped **Live-Daten** aus `play.autodarts.io` – im Dashboard sichtbar, via **WebSocket** und optional per **HTTP POST** exportiert. Ideal für Overlays, Analysen & Automationen.  
+Scraped **Live-Daten** aus `play.autodarts.io` – im Dashboard sichtbar und optional per **HTTP POST** exportiert. Ideal für Overlays, Analysen & Automationen.
 **Version:** 1.0.4 · **Manifest:** MV3
 
 ---
@@ -11,7 +11,7 @@ Scraped **Live-Daten** aus `play.autodarts.io` – im Dashboard sichtbar, via **
 - Variablen per Klick auswählen (**Picker**)
 - Settings speichern + **XML Import/Export** (`settings.xml` mitgeliefert)
 - Live-Updates **ohne Reload** (MutationObserver)
-- **WebSocket**-Export + optional **HTTP POST** (Webhook)
+- Optional **HTTP POST** (Webhook)
 - Zahlen-Fallback: fehlende `legs/sets` → **0**
 
 ---
@@ -29,7 +29,6 @@ Scraped **Live-Daten** aus `play.autodarts.io` – im Dashboard sichtbar, via **
 1. Dashboard öffnen → **Settings** → **Werkseinstellungen laden** (importiert `settings.xml`).  
 2. Variablen anpassen: **„+ Variable per Klick auswählen“**.  
 3. Exporte setzen:
-   - **WebSocket URL** (z. B. `ws://localhost:8765`)
    - **HTTP POST** aktivieren + URL (z. B. `http://localhost:3000/hook`)
 4. Tab **Output** prüfen – JSON ändert sich live.
 
