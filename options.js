@@ -1,11 +1,9 @@
 const CFG_KEY = "autodartsConfigs";
-const ORIGIN_INPUT = document.getElementById("origin");
-const loadBtn = document.getElementById("loadOrigin");
+const ORIGIN = "play.autodarts.io";
 const saveBtn = document.getElementById("save");
 const varsTbody = document.querySelector("#vars tbody");
 const addVarBtn = document.getElementById("addVar");
 const manualVarBtn = document.getElementById("manualVar");
-const wsUrlIn = document.getElementById("wsUrl");
 const whEnabledIn = document.getElementById("whEnabled");
 const whUrlIn = document.getElementById("whUrl");
 const livePre = document.getElementById("liveJson");
@@ -40,7 +38,7 @@ function setConfigs(cfg) {
   return chrome.storage.sync.set(o);
 }
 function defaultCfg() {
-  return { variables: [], wsUrl: "", webhook: { enabled: false, url: "" } };
+  return { variables: [], webhook: { enabled: false, url: "" } };
 }
 
 function row(def = {}) {
@@ -116,30 +114,25 @@ function collectVars() {
 }
 
 function loadCfg() {
-  var origin = (ORIGIN_INPUT.value || "play.autodarts.io").trim();
   return getConfigs().then(function (cfgs) {
-    var cfg = cfgs[origin] || defaultCfg();
+    var cfg = cfgs[ORIGIN] || defaultCfg();
     renderVars(cfg.variables);
-    wsUrlIn.value = cfg.wsUrl || "";
     whEnabledIn.checked = !!(cfg.webhook && cfg.webhook.enabled);
     whUrlIn.value = cfg.webhook && cfg.webhook.url ? cfg.webhook.url : "";
   });
 }
 
 function saveCfg() {
-  const origin = (ORIGIN_INPUT.value || "play.autodarts.io").trim();
   return getConfigs()
     .then(function (cfgs) {
-      cfgs[origin] = {
+      cfgs[ORIGIN] = {
         variables: collectVars(),
-        wsUrl: wsUrlIn.value.trim(),
         webhook: { enabled: !!whEnabledIn.checked, url: whUrlIn.value.trim() },
       };
       return setConfigs(cfgs);
     })
     .then(function () {
-      const urlPat =
-        "https://" + (ORIGIN_INPUT.value || "play.autodarts.io").trim() + "/*";
+      const urlPat = "https://" + ORIGIN + "/*";
       return chrome.tabs.query({ url: urlPat }).then(function (tabs) {
         const ps = [];
         for (let i = 0; i < tabs.length; i++) {
@@ -161,9 +154,8 @@ function saveCfg() {
 }
 
 function updateLive() {
-  var origin = (ORIGIN_INPUT.value || "play.autodarts.io").trim();
   return chrome.runtime.sendMessage(
-    { type: "GET_LIVE", origin: origin },
+    { type: "GET_LIVE", origin: ORIGIN },
     function (resp) {
       livePre.textContent = JSON.stringify((resp && resp.data) || {}, null, 2);
     },
@@ -292,7 +284,6 @@ function xmlEscape(s) {
 function toXml(origin, cfg) {
   var parts = [];
   parts.push('<autodartsConfig origin="' + xmlEscape(origin) + '">');
-  parts.push("  <wsUrl>" + xmlEscape(cfg.wsUrl || "") + "</wsUrl>");
   parts.push("  <webhook>");
   parts.push(
     "    <enabled>" +
@@ -332,9 +323,6 @@ function parseXmlToCfg(text, fallbackOrigin) {
     fallbackOrigin ||
     "play.autodarts.io"
   ).trim();
-  var wsUrl = "";
-  var wsNode = root.querySelector("wsUrl");
-  if (wsNode) wsUrl = (wsNode.textContent || "").trim();
   var webhook = { enabled: false, url: "" };
   var whNode = root.querySelector("webhook");
   if (whNode) {
@@ -383,7 +371,6 @@ function parseXmlToCfg(text, fallbackOrigin) {
   }
   return {
     origin: origin,
-    wsUrl: wsUrl,
     webhook: webhook,
     variables: variables,
   };
@@ -392,15 +379,14 @@ function parseXmlToCfg(text, fallbackOrigin) {
 // Export XML
 if (dlXmlBtn)
   dlXmlBtn.addEventListener("click", function () {
-    var origin = (ORIGIN_INPUT.value || "play.autodarts.io").trim();
     getConfigs().then(function (cfgs) {
-      var cfg = cfgs[origin] || defaultCfg();
-      var xml = toXml(origin, cfg);
+      var cfg = cfgs[ORIGIN] || defaultCfg();
+      var xml = toXml(ORIGIN, cfg);
       var blob = new Blob([xml], { type: "application/xml" });
       var url = URL.createObjectURL(blob);
       var a = document.createElement("a");
       a.href = url;
-      a.download = "autodarts_settings_" + origin + ".xml";
+      a.download = "autodarts_settings_" + ORIGIN + ".xml";
       document.body.appendChild(a);
       a.click();
       setTimeout(function () {
@@ -424,21 +410,18 @@ if (importInput)
     file
       .text()
       .then(function (text) {
-        var parsed = parseXmlToCfg(text, ORIGIN_INPUT.value.trim());
+        var parsed = parseXmlToCfg(text, ORIGIN);
         return getConfigs().then(function (cfgs) {
-          cfgs[parsed.origin] = {
+          cfgs[ORIGIN] = {
             variables: parsed.variables,
-            wsUrl: parsed.wsUrl,
             webhook: parsed.webhook,
           };
           return setConfigs(cfgs).then(function () {
-            ORIGIN_INPUT.value = parsed.origin;
             renderVars(parsed.variables);
-            wsUrlIn.value = parsed.wsUrl || "";
             whEnabledIn.checked = !!parsed.webhook.enabled;
             whUrlIn.value = parsed.webhook.url || "";
             return chrome.tabs
-              .query({ url: "https://" + parsed.origin + "/*" })
+              .query({ url: "https://" + ORIGIN + "/*" })
               .then(function (tabs) {
                 var ps = [];
                 for (let i = 0; i < tabs.length; i++) {
@@ -476,21 +459,18 @@ if (importDefaultsBtn)
         return r.text();
       })
       .then(function (text) {
-        var parsed = parseXmlToCfg(text, ORIGIN_INPUT.value.trim());
+        var parsed = parseXmlToCfg(text, ORIGIN);
         return getConfigs().then(function (cfgs) {
-          cfgs[parsed.origin] = {
+          cfgs[ORIGIN] = {
             variables: parsed.variables,
-            wsUrl: parsed.wsUrl,
             webhook: parsed.webhook,
           };
           return setConfigs(cfgs).then(function () {
-            ORIGIN_INPUT.value = parsed.origin;
             renderVars(parsed.variables);
-            wsUrlIn.value = parsed.wsUrl || "";
             whEnabledIn.checked = !!parsed.webhook.enabled;
             whUrlIn.value = parsed.webhook.url || "";
             return chrome.tabs
-              .query({ url: "https://" + parsed.origin + "/*" })
+              .query({ url: "https://" + ORIGIN + "/*" })
               .then(function (tabs) {
                 var ps = [];
                 for (let i = 0; i < tabs.length; i++) {
@@ -530,7 +510,7 @@ document.getElementById("testVars").addEventListener("click", function () {
       return chrome.tabs
         .sendMessage(tab.id, {
           type: "EXTRACT_ONCE",
-          origin: (ORIGIN_INPUT.value || "play.autodarts.io").trim(),
+          origin: ORIGIN,
         })
         .then(
           function (resp) {
@@ -549,7 +529,6 @@ document.getElementById("testVars").addEventListener("click", function () {
 });
 
 // Events
-loadBtn.addEventListener("click", loadCfg);
 saveBtn.addEventListener("click", function () {
   saveCfg();
 });
@@ -568,14 +547,12 @@ copyBtn.addEventListener("click", function () {
 refreshBtn.addEventListener("click", updateLive);
 
 // Init + auto-load defaults on first run
-ORIGIN_INPUT.value = "play.autodarts.io";
 (function init() {
-  var origin = (ORIGIN_INPUT.value || "play.autodarts.io").trim();
   getConfigs().then(function (cfgs) {
     if (
-      !cfgs[origin] ||
-      !cfgs[origin].variables ||
-      cfgs[origin].variables.length === 0
+      !cfgs[ORIGIN] ||
+      !cfgs[ORIGIN].variables ||
+      cfgs[ORIGIN].variables.length === 0
     ) {
       var url = chrome.runtime.getURL("settings.xml");
       fetch(url)
@@ -583,10 +560,9 @@ ORIGIN_INPUT.value = "play.autodarts.io";
           return r.text();
         })
         .then(function (text) {
-          var parsed = parseXmlToCfg(text, origin);
-          cfgs[parsed.origin] = {
+          var parsed = parseXmlToCfg(text, ORIGIN);
+          cfgs[ORIGIN] = {
             variables: parsed.variables,
-            wsUrl: parsed.wsUrl,
             webhook: parsed.webhook,
           };
           return setConfigs(cfgs);

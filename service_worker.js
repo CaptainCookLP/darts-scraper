@@ -14,11 +14,8 @@ function getConfigFor(origin) {
   return getConfigs().then(function (cfgs) {
     var cfg = cfgs[origin] || {
       variables: [],
-      wsUrl: "",
       webhook: { enabled: false, url: "" },
     };
-    if (!cfg.wsUrl && cfg.export && cfg.export.wsUrl)
-      cfg.wsUrl = cfg.export.wsUrl;
     if (!cfg.webhook)
       cfg.webhook =
         cfg.export && cfg.export.webhook
@@ -32,32 +29,6 @@ function saveLiveData(origin, payload) {
   o[LIVE_KEY_PREFIX + origin] = payload;
   return chrome.storage.local.set(o).then(function () {
     return chrome.storage.local.set({ lastUpdate: Date.now() });
-  });
-}
-function pushWS(origin, data, wsUrl) {
-  if (!wsUrl) return Promise.resolve();
-  return new Promise(function (resolve) {
-    try {
-      var ws = new WebSocket(wsUrl);
-      ws.addEventListener("open", function () {
-        try {
-          ws.send(
-            JSON.stringify({ origin: origin, data: data, ts: Date.now() }),
-          );
-        } catch (e) {}
-        setTimeout(function () {
-          try {
-            ws.close();
-          } catch (e) {}
-          resolve();
-        }, 150);
-      });
-      ws.addEventListener("error", function () {
-        resolve();
-      });
-    } catch (e) {
-      resolve();
-    }
   });
 }
 function pushPOST(origin, data, webhook) {
@@ -77,10 +48,7 @@ function pushPOST(origin, data, webhook) {
 }
 function pushExports(origin, data) {
   return getConfigFor(origin).then(function (cfg) {
-    return Promise.all([
-      pushWS(origin, data, cfg.wsUrl || ""),
-      pushPOST(origin, data, cfg.webhook || { enabled: false, url: "" }),
-    ]);
+    return pushPOST(origin, data, cfg.webhook || { enabled: false, url: "" });
   });
 }
 chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {

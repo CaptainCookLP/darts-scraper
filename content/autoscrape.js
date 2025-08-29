@@ -2,8 +2,6 @@ var ORIGIN_KEY = location.host;
 function normalizeConfig(r) {
   var c = r || {};
   if (!Array.isArray(c.variables)) c.variables = [];
-  if (typeof c.wsUrl !== "string")
-    c.wsUrl = c.export && c.export.wsUrl ? c.export.wsUrl : "";
   if (!c.webhook)
     c.webhook =
       c.export && c.export.webhook

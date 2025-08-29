@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "AutodartsWebSocket",
+  "name": "AutodartsScraper",
   "version": "1.0.4",
-  "description": "Scrape live data from play.autodarts.io with clickable selection, live updates, WebSocket export, and HTTP POST webhook.",
+  "description": "Scrape live data from play.autodarts.io with clickable selection, live updates, and optional HTTP POST webhook.",
   "permissions": ["storage", "scripting", "activeTab", "contextMenus", "tabs"],
   "host_permissions": ["https://play.autodarts.io/*"],
   "background": {
